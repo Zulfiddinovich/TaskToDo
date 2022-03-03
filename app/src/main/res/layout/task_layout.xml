@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_margin="10dp"
+    android:elevation="30dp"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_marginStart="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@id/checkbox"
+            android:layout_width="35dp"
+            android:layout_height="30dp"
+            android:checked="false"
+
+            />
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:fontFamily="@font/merriweather_bold"
+            android:text="@string/app_name"
+            android:textSize="25dp" />
+
+        <TextView
+            android:id="@+id/item_deadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/merriweather_italic"
+            android:singleLine="true"
+            android:text="25 Avg"
+            android:textSize="25dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:scaleY="1.3"
+            android:scaleX="1.3"
+            android:src="@drawable/move" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
