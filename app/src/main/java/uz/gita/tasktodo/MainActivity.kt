@@ -40,10 +40,10 @@ class MainActivity : AppCompatActivity(), Contract.View {
         toolbar.title = ""
         setSupportActionBar(toolbar)
         init()
+        setAdapter()
 
         presenter = Presenter(this)
         presenter.reload()
-        setAdapter()
 
         adapter.setListener { isClosed, pos ->
             presenter.onCheckboxAction(isClosed, pos)
