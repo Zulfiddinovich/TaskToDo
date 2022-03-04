@@ -42,7 +42,7 @@ class LocalStorage private constructor(context: Context) {
     }
 
     fun getListFromShared(): ArrayList<TaskEntity> {
-        val json: String? = pref.getString("TASK", "")
+        val json: String? = pref.getString("TASK", null)
         if (json == null) {
             return ArrayList<TaskEntity>()
         }

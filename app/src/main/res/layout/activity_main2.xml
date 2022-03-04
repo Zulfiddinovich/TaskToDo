@@ -107,22 +107,23 @@
         android:id="@+id/add_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="35dp"
-        android:src="@drawable/ic_add_button"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/ic_x"
         android:visibility="visible"
-        app:backgroundTint="#43C3FF"
+        app:backgroundTint="#FFC107"
         app:tint="@android:color/white"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toTopOf="@id/dialog1"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/dialog1"
-        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="parent">
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
             android:id="@+id/imageView"
@@ -145,16 +146,16 @@
 
             <TextView
                 android:layout_width="20dp"
-                android:layout_height="30dp"
-                android:fontFamily="@font/merriweather_regular" />
+                android:fontFamily="@font/merriweather_regular"
+                android:layout_height="30dp" />
 
             <EditText
                 android:id="@+id/edit_item_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:background="#00FFFFFF"
                 android:fontFamily="@font/merriweather_bold"
+                android:background="#00FFFFFF"
                 android:hint="Enter title"
                 android:inputType="textCapSentences"
                 android:maxLines="5"
@@ -168,9 +169,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:background="#00FFFFFF"
-                android:fontFamily="@font/merriweather_regular"
                 android:hint="deadline"
                 android:inputType="textCapWords"
+                android:fontFamily="@font/merriweather_regular"
                 android:maxLength="7"
                 android:singleLine="true"
                 android:textColor="@color/black"
@@ -179,7 +180,6 @@
 
             <ImageButton
                 android:id="@+id/save_button"
-                android:visibility="invisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
