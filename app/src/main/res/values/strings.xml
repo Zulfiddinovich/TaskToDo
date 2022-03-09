@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TaskToDo</string>
+    <string name="maydon_tuldiring">Kerakkli maydonni to`ldiring!</string>
+    <string name="cannot_email">You have no application to contact us via email</string>
 </resources>

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.transition.TransitionManager
+import android.util.Log.d
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,15 +14,20 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
-import uz.gita.tasktodo.model.TaskEntity
+import uz.gita.tasktodo.model.db.TaskEntity
 import uz.gita.tasktodo.presenter.Presenter
 import uz.gita.tasktodo.util.showSnackbar
+import uz.gita.tasktodo.view.ItemGestures
 import uz.gita.tasktodo.view.TaskAdapter
 
 
@@ -32,54 +38,113 @@ class MainActivity : AppCompatActivity(), Contract.View {
     private val constrain1 = ConstraintSet()
     private val constrain2 = ConstraintSet()
     private lateinit var constraint: ConstraintLayout
+    private var tempPos: Int? = null
+    private var customItem = TaskEntity(0,"","",true)
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        toolbar.title = ""
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+
         init()
         setAdapter()
 
         presenter = Presenter(this)
-        presenter.reload()
+        presenter.reloadAction()
 
         adapter.setListener { isClosed, pos ->
-            presenter.onCheckboxAction(isClosed, pos)
-
-            countSetter()
+            presenter.onCloseAction(isClosed, pos)
         }
 
         add_button.setOnClickListener {
-            hide()
+            customItem.id = 0
+            customItem.title = ""
+            customItem.deadline = ""
+            customItem.isClosed = false
+            presenter.hide()
         }
 
         save_button.setOnClickListener {
-            if (edit_item_title.text.isNotEmpty() && edit_item_deadline.text.isNotEmpty()) {
-
-                val newTask = TaskEntity(
-                    0,
-                    edit_item_title.text.toString(),
-                    edit_item_deadline.text.toString(),
-                    false
-                )
-                presenter.addNewItemAction(newTask)
-                hide()
-            } else {
-                showSnackbar(this.dialog1, "Kerakkli maydonni to`ldiring!")
+            when (customItem.id) {
+                0 -> presenter.saveNewTaskAction()
+                else -> presenter.saveUpdatedTaskAction()
             }
 
         }
 
         swipe_refresh.setOnRefreshListener {
+            presenter.reloadAction()
             swipe_refresh.isRefreshing = false
         }
 
 
+        openOptionsMenu()
+        menu_button.setOnClickListener {
+//            closeOptionsMenu()
+        }
+
+
+        val swipeGestures = object: ItemGestures(this){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                tempPos = viewHolder.adapterPosition
+                when(direction){
+                    ItemTouchHelper.RIGHT -> {
+                        customItem = adapter.currentList[tempPos!!]
+                        setForEdit(customItem)
+                    }
+                    ItemTouchHelper.LEFT -> {
+                        adapter.delete(tempPos!!)
+                        (presenter as Presenter).deleteAction(adapter.currentList[tempPos!!])
+                    }
+                }
+            }
+        }
+        val touchHelper = ItemTouchHelper(swipeGestures)
+        touchHelper.attachToRecyclerView(recyclerView)
     }
 
-    private fun countSetter() {
+    override fun openOptionsMenu() {
+        (toolbar as androidx.appcompat.widget.Toolbar).showOverflowMenu();
+    }
+
+    private fun setForEdit(item: TaskEntity){
+        if (save_button.isInvisible) presenter.hide()
+
+        edit_item_title.setText(item.title)
+        edit_item_deadline.setText(item.deadline)
+    }
+
+    override fun saveUpdatedTask() {
+        if (edit_item_title.text.isNotEmpty() && edit_item_deadline.text.isNotEmpty()) {
+            customItem.title = edit_item_title.text.toString()
+            customItem.deadline = edit_item_deadline.text.toString()
+
+            presenter.editAction(customItem)
+            adapter.notifyItemChanged(tempPos!!)
+            tempPos = null
+            presenter.hide()
+        } else {
+            showSnackbar(this.dialog1, getString(R.string.maydon_tuldiring))
+        }
+    }
+
+    override fun saveNewTask() {
+        if (edit_item_title.text.isNotEmpty() && edit_item_deadline.text.isNotEmpty()) {
+
+            customItem.title = edit_item_title.text.toString()
+            customItem.deadline = edit_item_deadline.text.toString()
+            presenter.addAction(customItem)
+            d("TAG", customItem.title +" "+customItem.deadline)
+            presenter.hide()
+        } else {
+            showSnackbar(this.dialog1, getString(R.string.maydon_tuldiring))
+        }
+    }
+
+    override fun countSetter() {
         var counter = 0
         activityList.forEach {
             if (it.isClosed)
@@ -98,8 +163,6 @@ class MainActivity : AppCompatActivity(), Contract.View {
         /*  Edit text automatic ochilib qolayotgan edi  */
         this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         /*******/
-
-
         /*  EditTextlar animatsiya qilish uchun recyclerni orqasida qolishga majbur edi  */
         /*super_layout.requestLayout()
         dialog1.bringToFront()
@@ -115,12 +178,11 @@ class MainActivity : AppCompatActivity(), Contract.View {
 
         constrain2.clone(this, R.layout.activity_main2)
         setContentView(R.layout.activity_main)
-
         constraint = findViewById<ConstraintLayout>(R.id.super_layout)
         constrain1.clone(constraint)
     }
 
-    private fun hide() {
+    override fun hide() {
         TransitionManager.beginDelayedTransition(constraint)
         if (save_button.isVisible) {
             constrain1.applyTo(constraint)
@@ -146,24 +208,16 @@ class MainActivity : AppCompatActivity(), Contract.View {
     }
 
     override fun showList(list: List<TaskEntity>) {
-        adapter.setList(list)
+        adapter.newSubmit(list, false)
         activityList.clear()
         activityList.addAll((list as ArrayList<TaskEntity>))
-
-        countSetter()
     }
-
-    override fun onStop() {
-        presenter.leaveToPrefAction()
-        super.onStop()
-    }
-
 
     @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         if (menu is MenuBuilder) menu.setOptionalIconsVisible(true)
-        return super.onCreateOptionsMenu(menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -174,6 +228,7 @@ class MainActivity : AppCompatActivity(), Contract.View {
         }
         return super.onOptionsItemSelected(item)
     }
+
 
     private fun rateApp() {
         val packageName =
@@ -222,7 +277,7 @@ class MainActivity : AppCompatActivity(), Contract.View {
         if (intent.resolveActivity(this.packageManager) != null) {
             startActivity(intent)
         } else {
-            showSnackbar(this.toolbar, "You have no application to contact us via email")
+            showSnackbar(this.toolbar, getString(R.string.cannot_email))
         }
     }
 

@@ -6,14 +6,14 @@ import androidx.room.*
 interface TaskDao {
 
     @Query("SELECT * FROM tasks")
-    fun getAll(): List<Task1Entity>
+    fun getAll(): List<TaskEntity>
 
     @Insert
-    fun addTask(data: Task1Entity)
+    fun add(data: TaskEntity)
 
     @Delete
-    fun deleteTask(data: Task1Entity)
+    fun delete(data: TaskEntity)
 
     @Update
-    fun editTask(data: Task1Entity)
+    fun edit(data: TaskEntity)
 }

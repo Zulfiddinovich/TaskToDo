@@ -6,36 +6,69 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.task_layout.view.*
 import uz.gita.tasktodo.R
-import uz.gita.tasktodo.model.TaskEntity
+import uz.gita.tasktodo.model.db.TaskEntity
+import java.util.ArrayList
 
-class TaskAdapter: RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
-    private val list: ArrayList<TaskEntity> = ArrayList<TaskEntity>()
+class TaskAdapter: ListAdapter<TaskEntity,RecyclerView.ViewHolder>(Diff()) {
     private lateinit var listener: (Boolean, Int)-> Unit
+    private val list = ArrayList<TaskEntity>()
+    private var removedItems = ArrayList<TaskEntity>()
+
 
     fun setListener(listener: (Boolean, Int)-> Unit){
         this.listener = listener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
+    class Diff: DiffUtil.ItemCallback<TaskEntity>() {
+        override fun areItemsTheSame(oldItem: TaskEntity, newItem: TaskEntity): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: TaskEntity, newItem: TaskEntity): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return TaskViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.task_layout, parent, false))
     }
 
-    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(list[position], position)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is TaskViewHolder) holder.bind(currentList[position], position)
     }
 
-    override fun getItemCount(): Int {
-        return list.size
+    /*    ////*****////
+    * since we use a ListAdapter it refreshes a data list asynchronously and it can easily lead to that
+    * we will get the currentList that hasn’t updated yet but a view holder was already removed all this
+    * leads to that we get wrong items count from getItemCount() method and sometimes incorrect items
+    * placement on the screen, this case most likely if user swipes items quickly:
+    *        Now the method can return an item if it was removed and null otherwise.*/
+    fun delete(pos: Int): Any? {
+        if (pos < itemCount){
+            val item = currentList[pos]
+            removedItems.add(item)
+            val actualList = (currentList - removedItems) as ArrayList<TaskEntity>
+            if (actualList.isEmpty()) removedItems.clear()
+            newSubmit(actualList, false)
+            return item
+        } else {
+            return null
+        }
     }
 
-    fun setList(list: List<TaskEntity>){
-        this.list.clear()
-        this.list.addAll(list)
-        notifyDataSetChanged()
+
+    fun newSubmit(list: List<TaskEntity>, isNewList: Boolean) {
+        if (isNewList) removedItems.clear()
+        super.submitList(list)
     }
+    ////*****////
+
+
 
 
 
@@ -67,4 +100,6 @@ class TaskAdapter: RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
             }
         }
     }
+
+
 }

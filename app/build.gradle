@@ -73,6 +73,8 @@ dependencies {
 
     //    implementation "androidx.room:room-compiler:$roomVersion" IT IS NOT NEEDED ME
 
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
+
 
 
 

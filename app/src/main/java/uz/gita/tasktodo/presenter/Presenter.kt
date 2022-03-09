@@ -3,40 +3,55 @@ package uz.gita.tasktodo.presenter
 import android.util.Log
 import uz.gita.tasktodo.Contract
 import uz.gita.tasktodo.model.Model
-import uz.gita.tasktodo.model.TaskEntity
+import uz.gita.tasktodo.model.db.TaskEntity
 
 class Presenter(view: Contract.View): Contract.Presenter {
     private var model: Contract.Model = Model()
     private val view: Contract.View = view
+    var isNew = false
 
-    override fun reload() {
-        var list: ArrayList<TaskEntity> = model.loadList()
+    override fun reloadAction() {
+        var list = model.getAll()
         view.showList(list)
+        view.countSetter()
         Log.d("TAG", "presenter gets list " + list.size)
     }
 
-    override fun onAddAction() {
-
-    }
-
-    override fun leaveToPrefAction() {
-        model.leaveToPref()
-    }
-
-    override fun onCheckboxAction(isClosed: Boolean, position: Int) {
-        model.isClosed(isClosed, position)
+    override fun editAction(data: TaskEntity) {
+        model.editTask(data)
+        reloadAction()
     }
 
 
-    override fun addNewItemAction(data: TaskEntity) {
+    override fun onCloseAction(isClosed: Boolean, position: Int) {
+        model.closeTask(isClosed, position)
+        view.countSetter()
 
-        model.addNewItem(data)
-        reload()
+    }
+
+
+    override fun addAction(data: TaskEntity) {
+        model.addTask(data)
+        reloadAction()
         Log.d("TAG", "addNewItem: $data")
 
     }
 
-    override fun clearList() {
+    override fun deleteAction(data: TaskEntity) {
+        model.deleteTask(data)
+        reloadAction()
 
+    }
+
+    override fun saveUpdatedTaskAction() {
+        view.saveUpdatedTask()
+    }
+
+    override fun saveNewTaskAction() {
+        view.saveNewTask()
+    }
+
+    override fun hide() {
+        view.hide()
     }
 }

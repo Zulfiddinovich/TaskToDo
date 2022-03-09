@@ -1,39 +1,50 @@
 package uz.gita.tasktodo
 
-import uz.gita.tasktodo.model.TaskEntity
+import uz.gita.tasktodo.model.db.TaskEntity
 
 interface Contract {
 
     interface Model{
-        fun loadList(): ArrayList<TaskEntity>
+        fun getAll(): ArrayList<TaskEntity>
 
-        fun addNewItem(data: TaskEntity)
+        fun addTask(data: TaskEntity)
 
-        fun leaveToPref()
+        fun closeTask(isClosed: Boolean, position: Int)
 
-        fun addMore()
+        fun editTask(data: TaskEntity)
 
-        fun isClosed(isClosed: Boolean, position: Int)
-
-        fun clear()
+        fun deleteTask(data: TaskEntity)
     }
 
     interface Presenter{
-        fun reload()
 
-        fun onAddAction()
+        fun reloadAction()
 
-        fun leaveToPrefAction()
+        fun addAction(data: TaskEntity)
 
-        fun onCheckboxAction(isClosed: Boolean, position: Int)
+        fun onCloseAction(isClosed: Boolean, position: Int)
 
-        fun addNewItemAction(data: TaskEntity)
+        fun editAction(data: TaskEntity)
 
-        fun clearList()
+        fun deleteAction(data: TaskEntity)
+
+        fun saveUpdatedTaskAction()
+
+        fun saveNewTaskAction()
+
+        fun hide()
     }
 
     interface View{
         fun showList(list: List<TaskEntity>)
+
+        fun countSetter()
+
+        fun saveUpdatedTask()
+
+        fun saveNewTask()
+
+        fun hide()
     }
 
 }

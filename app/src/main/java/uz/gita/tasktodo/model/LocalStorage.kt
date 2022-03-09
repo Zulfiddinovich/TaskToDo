@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import uz.gita.tasktodo.model.db.TaskEntity
 
 class LocalStorage private constructor(context: Context) {
 
