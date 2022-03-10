@@ -43,15 +43,13 @@ class Presenter(view: Contract.View): Contract.Presenter {
 
     }
 
-    override fun saveUpdatedTaskAction() {
-        view.saveUpdatedTask()
+    override fun moveAction(from_pos: Int, to_pos: Int) {
+
+        Log.d("TAG", "Moving from_pos - $from_pos to_pos - $to_pos")
+        model.moveDB(from_pos, to_pos)
     }
 
-    override fun saveNewTaskAction() {
-        view.saveNewTask()
-    }
-
-    override fun hide() {
-        view.hide()
+    override fun openEditDialog(data: TaskEntity) {
+        view.editDialog(data)
     }
 }

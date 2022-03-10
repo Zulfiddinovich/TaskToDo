@@ -14,6 +14,8 @@ interface Contract {
         fun editTask(data: TaskEntity)
 
         fun deleteTask(data: TaskEntity)
+
+        fun moveDB(from_pos: Int, to_pos: Int)
     }
 
     interface Presenter{
@@ -28,11 +30,9 @@ interface Contract {
 
         fun deleteAction(data: TaskEntity)
 
-        fun saveUpdatedTaskAction()
+        fun moveAction(from_pos: Int, to_pos: Int)
 
-        fun saveNewTaskAction()
-
-        fun hide()
+        fun openEditDialog(data: TaskEntity)
     }
 
     interface View{
@@ -40,11 +40,9 @@ interface Contract {
 
         fun countSetter()
 
-        fun saveUpdatedTask()
+        fun editDialog(item: TaskEntity)
 
-        fun saveNewTask()
-
-        fun hide()
+        fun setDialog()
     }
 
 }

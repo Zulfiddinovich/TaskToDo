@@ -10,16 +10,15 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import uz.gita.tasktodo.R
 
 
-abstract class ItemGestures(val context: Context): ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-    val deleteColor = ContextCompat.getColor(context,R.color.red)
-    val editColor = ContextCompat.getColor(context,R.color.gray)
-    val deleteIcon = R.drawable.ic_edit
-    val editIcon = R.drawable.ic_delete
-
-
-    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-        return false
-    }
+abstract class ItemGestures(val context: Context) :
+    ItemTouchHelper.SimpleCallback(
+        ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END,
+        ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+    ) {
+    private val deleteColor = ContextCompat.getColor(context, R.color.red)
+    private val deleteIcon = R.drawable.ic_delete
+    private val editColor = ContextCompat.getColor(context, R.color.gray)
+    private val editIcon = R.drawable.ic_edit
 
 
     override fun onChildDraw(
@@ -31,7 +30,15 @@ abstract class ItemGestures(val context: Context): ItemTouchHelper.SimpleCallbac
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+        RecyclerViewSwipeDecorator.Builder(
+            c,
+            recyclerView,
+            viewHolder,
+            dX,
+            dY,
+            actionState,
+            isCurrentlyActive
+        )
             .addSwipeLeftActionIcon(deleteIcon)
             .addSwipeLeftBackgroundColor(deleteColor)
             .addSwipeRightActionIcon(editIcon)

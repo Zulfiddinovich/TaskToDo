@@ -5,52 +5,48 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.transition.TransitionManager
 import android.util.Log.d
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import uz.gita.tasktodo.model.db.TaskEntity
 import uz.gita.tasktodo.presenter.Presenter
 import uz.gita.tasktodo.util.showSnackbar
 import uz.gita.tasktodo.view.ItemGestures
 import uz.gita.tasktodo.view.TaskAdapter
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), Contract.View {
     private lateinit var adapter: TaskAdapter
     private lateinit var presenter: Contract.Presenter
     private var activityList = ArrayList<TaskEntity>()
-    private val constrain1 = ConstraintSet()
-    private val constrain2 = ConstraintSet()
-    private lateinit var constraint: ConstraintLayout
     private var tempPos: Int? = null
-    private var customItem = TaskEntity(0,"","",true)
-
+    private var customItem = TaskEntity(0, "", "", true, 0)
+    private lateinit var dialog: BottomSheetDialog
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.title = ""
         setSupportActionBar(toolbar)
 
         init()
         setAdapter()
+        setDialog()
 
         presenter = Presenter(this)
         presenter.reloadAction()
@@ -64,15 +60,8 @@ class MainActivity : AppCompatActivity(), Contract.View {
             customItem.title = ""
             customItem.deadline = ""
             customItem.isClosed = false
-            presenter.hide()
-        }
-
-        save_button.setOnClickListener {
-            when (customItem.id) {
-                0 -> presenter.saveNewTaskAction()
-                else -> presenter.saveUpdatedTaskAction()
-            }
-
+            customItem.sortId = 0
+            presenter.openEditDialog(customItem)
         }
 
         swipe_refresh.setOnRefreshListener {
@@ -80,24 +69,47 @@ class MainActivity : AppCompatActivity(), Contract.View {
             swipe_refresh.isRefreshing = false
         }
 
-
-        openOptionsMenu()
-        menu_button.setOnClickListener {
-//            closeOptionsMenu()
-        }
+        val swipeGestures = object : ItemGestures(this) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
 
 
-        val swipeGestures = object: ItemGestures(this){
+                val from_pos = viewHolder.adapterPosition
+                val to_pos = target.adapterPosition
+                d("TAG", "from_pos - $from_pos to_pos - $to_pos")
+
+                Collections.swap(activityList, from_pos, to_pos)
+                adapter.notifyItemMoved(from_pos, to_pos)
+                presenter.moveAction(from_pos, to_pos)
+                return false
+            }
+
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 tempPos = viewHolder.adapterPosition
-                when(direction){
+                val item = adapter.currentList[tempPos!!]
+                when (direction) {
                     ItemTouchHelper.RIGHT -> {
-                        customItem = adapter.currentList[tempPos!!]
-                        setForEdit(customItem)
+
+                        customItem.id = item.id
+                        customItem.title = item.title
+                        customItem.deadline = item.deadline
+                        customItem.isClosed = item.isClosed
+                        customItem.sortId = item.sortId
+
+                        presenter.openEditDialog(customItem)
+                        adapter.notifyItemChanged(tempPos!!)
                     }
                     ItemTouchHelper.LEFT -> {
                         adapter.delete(tempPos!!)
                         (presenter as Presenter).deleteAction(adapter.currentList[tempPos!!])
+
+                        Snackbar.make(recyclerView, "Task deleated", Snackbar.LENGTH_LONG).setAction("Undo") {
+                            presenter.addAction(item)
+//                            adapter!!.notifyItemRemoved(tempPos!!)
+                        }
+                            .show()
+
+
+
                     }
                 }
             }
@@ -106,49 +118,11 @@ class MainActivity : AppCompatActivity(), Contract.View {
         touchHelper.attachToRecyclerView(recyclerView)
     }
 
-    override fun openOptionsMenu() {
-        (toolbar as androidx.appcompat.widget.Toolbar).showOverflowMenu();
-    }
-
-    private fun setForEdit(item: TaskEntity){
-        if (save_button.isInvisible) presenter.hide()
-
-        edit_item_title.setText(item.title)
-        edit_item_deadline.setText(item.deadline)
-    }
-
-    override fun saveUpdatedTask() {
-        if (edit_item_title.text.isNotEmpty() && edit_item_deadline.text.isNotEmpty()) {
-            customItem.title = edit_item_title.text.toString()
-            customItem.deadline = edit_item_deadline.text.toString()
-
-            presenter.editAction(customItem)
-            adapter.notifyItemChanged(tempPos!!)
-            tempPos = null
-            presenter.hide()
-        } else {
-            showSnackbar(this.dialog1, getString(R.string.maydon_tuldiring))
-        }
-    }
-
-    override fun saveNewTask() {
-        if (edit_item_title.text.isNotEmpty() && edit_item_deadline.text.isNotEmpty()) {
-
-            customItem.title = edit_item_title.text.toString()
-            customItem.deadline = edit_item_deadline.text.toString()
-            presenter.addAction(customItem)
-            d("TAG", customItem.title +" "+customItem.deadline)
-            presenter.hide()
-        } else {
-            showSnackbar(this.dialog1, getString(R.string.maydon_tuldiring))
-        }
-    }
 
     override fun countSetter() {
         var counter = 0
         activityList.forEach {
-            if (it.isClosed)
-            else counter++
+            if (!it.isClosed) counter++
         }
         active_task_size.text = counter.toString()
     }
@@ -174,41 +148,69 @@ class MainActivity : AppCompatActivity(), Contract.View {
             dialog1.setTranslationZ(Integer.MAX_VALUE.toFloat());
         }
 //        super_layout.bringChildToFront(dialog1)*/
-
-
-        constrain2.clone(this, R.layout.activity_main2)
-        setContentView(R.layout.activity_main)
-        constraint = findViewById<ConstraintLayout>(R.id.super_layout)
-        constrain1.clone(constraint)
     }
 
-    override fun hide() {
-        TransitionManager.beginDelayedTransition(constraint)
-        if (save_button.isVisible) {
-            constrain1.applyTo(constraint)
-            save_button.visibility = View.INVISIBLE
-            add_button.setImageResource(R.drawable.ic_add_button)
-            add_button.background.setTint(ContextCompat.getColor(this, R.color.blue))
-            edit_item_title.setText("")
-            edit_item_deadline.setText("")
+    override fun editDialog(item: TaskEntity) {
+        val editView = layoutInflater.inflate(R.layout.bottom_edit, null)
 
-            val view = this.currentFocus
-            if (view != null) {
-                val imm: InputMethodManager =
-                    this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
+        val title = editView.findViewById<EditText>(R.id.edit_item_title)
+        val deadline = editView.findViewById<EditText>(R.id.edit_item_deadline)
+        val button = editView.findViewById<ImageButton>(R.id.save_button)
+        val exitButton = editView.findViewById<FloatingActionButton>(R.id.exit_button)
+        title.setText(item.title)
+        deadline.setText(item.deadline)
+        dialog.setContentView(editView)
+        dialog.show()
+
+        /*val view = this.currentFocus
+        if (view != null) {
+            val imm: InputMethodManager =
+                this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }*/
+
+        exitButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        if (item.id != 0) {
+            button.setOnClickListener {
+                d("TAG", "edit: saved")
+                if (title.text.isNotEmpty() && deadline.text.isNotEmpty()) {
+                    item.title = title.text.toString()
+                    item.deadline = deadline.text.toString()
+                    presenter.editAction(item)
+                    dialog.dismiss()
+//                    adapter.notifyItemChanged(tempPos!!)
+                    tempPos = null
+                } else {
+                    showSnackbar(editView, getString(R.string.maydon_tuldiring))
+                }
             }
-
         } else {
-            constrain2.applyTo(constraint)
-            save_button.visibility = View.VISIBLE
-            add_button.setImageResource(R.drawable.ic_x)
-            add_button.background.setTint(ContextCompat.getColor(this, R.color.yellow))
+            button.setOnClickListener {
+                d("TAG", "new: saved")
+                if (title.text.isNotEmpty() && deadline.text.isNotEmpty()) {
+                    item.title = title.text.toString()
+                    item.deadline = deadline.text.toString()
+                    presenter.addAction(item)
+                    dialog.dismiss()
+                } else {
+                    showSnackbar(editView, getString(R.string.maydon_tuldiring))
+                }
+            }
         }
     }
 
+
+    override fun setDialog() {
+        dialog = BottomSheetDialog(this, R.style.DialogCustomTheme)
+        dialog.setCancelable(true)
+
+    }
+
     override fun showList(list: List<TaskEntity>) {
-        adapter.newSubmit(list, false)
+        adapter.newSubmit(list, true)
         activityList.clear()
         activityList.addAll((list as ArrayList<TaskEntity>))
     }

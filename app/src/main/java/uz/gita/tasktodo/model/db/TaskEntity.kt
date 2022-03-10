@@ -14,5 +14,8 @@ data class TaskEntity (
     var deadline: String,
 
     @ColumnInfo(name = "is_closed")
-    var isClosed: Boolean
+    var isClosed: Boolean,
+
+    @ColumnInfo(name = "sort_id")
+    var sortId: Int
 )

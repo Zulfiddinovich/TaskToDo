@@ -105,94 +105,9 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:src="@drawable/ic_x"
-        android:visibility="visible"
-        app:backgroundTint="#FFC107"
-        app:tint="@android:color/white"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintBottom_toTopOf="@id/dialog1"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/dialog1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/dialog_background"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="@id/dialog2" />
-
-        <LinearLayout
-            android:id="@+id/dialog2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="10dp"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <TextView
-                android:layout_width="20dp"
-                android:fontFamily="@font/merriweather_regular"
-                android:layout_height="30dp" />
-
-            <EditText
-                android:id="@+id/edit_item_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:fontFamily="@font/merriweather_bold"
-                android:background="#00FFFFFF"
-                android:hint="Enter title"
-                android:inputType="textCapSentences"
-                android:maxLines="5"
-                android:textColor="@color/black"
-                android:textSize="25dp"
-                app:backgroundTint="@null" />
-
-            <EditText
-                android:id="@+id/edit_item_deadline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:background="#00FFFFFF"
-                android:hint="deadline"
-                android:inputType="textCapWords"
-                android:fontFamily="@font/merriweather_regular"
-                android:maxLength="7"
-                android:singleLine="true"
-                android:textColor="@color/black"
-                android:textSize="25dp"
-                app:backgroundTint="@null" />
-
-            <ImageButton
-                android:id="@+id/save_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:background="#0000FFFF"
-                android:scaleX="1.2"
-                android:scaleY="1.2"
-                android:src="@drawable/ic_save" />
-
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

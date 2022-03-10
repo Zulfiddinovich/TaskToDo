@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,6 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:background="@color/white"
+        android:foreground="?selectableItemBackground"
         app:cardCornerRadius="10dp"
         app:cardElevation="6dp">
 
@@ -43,6 +44,7 @@
                 android:id="@+id/item_deadline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:fontFamily="@font/merriweather_italic"
                 android:singleLine="true"
                 android:text="25 Avg"
@@ -54,7 +56,8 @@
                 android:layout_margin="6dp"
                 android:scaleX="1.3"
                 android:scaleY="1.3"
-                android:src="@drawable/move" />
+                android:src="@drawable/move"
+                android:visibility="gone" />
 
         </LinearLayout>
 
