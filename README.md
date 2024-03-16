@@ -2,7 +2,7 @@
 # "TaskTodo" android todo app
 This project is Todo app for android.
 
-<img src="https://img.shields.io/badge/license-MIT_license-blue"/>
+<img alt="" src="https://img.shields.io/badge/license-MIT_license-blue"/>
 
 
 # Features
@@ -14,13 +14,13 @@ This project is Todo app for android.
 
 # Images
 
-<img src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/Main_photo_PlayMarket.jpg" style="border:3px outset silver;"/>
+<img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/Main_photo_PlayMarket.jpg" style="border:3px outset silver;"/>
 
-<img src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/1_.jpg" style="border:3px outset silver;" width="250"/>
-<img src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/2_.jpg" style="border:3px outset silver;" width="250"/>
-<img src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/3_.jpg" style="border:3px outset silver;" width="250"/>
-<img src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/4_.jpg" style="border:3px outset silver;" width="250"/>
-<img src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/5_.jpg" style="border:3px outset silver;" width="250"/>
+<img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/1_.jpg" style="border:3px outset silver;" width="250"/>
+<img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/2_.jpg" style="border:3px outset silver;" width="250"/>
+<img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/3_.jpg" style="border:3px outset silver;" width="250"/>
+<img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/4_.jpg" style="border:3px outset silver;" width="250"/>
+<img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/5_.jpg" style="border:3px outset silver;" width="250"/>
 
 
 # License
