@@ -5,10 +5,12 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log.d
 import android.view.Menu
 import android.view.MenuItem
-import android.view.WindowManager
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
+import uz.gita.tasktodo.app.App
+import uz.gita.tasktodo.databinding.ActivityMainBinding
 import uz.gita.tasktodo.model.db.TaskEntity
 import uz.gita.tasktodo.presenter.Presenter
 import uz.gita.tasktodo.util.showSnackbar
@@ -36,15 +39,17 @@ class MainActivity : AppCompatActivity(), Contract.View {
     private var tempPos: Int? = null
     private var customItem = TaskEntity(0, "", "", true, 0)
     private lateinit var dialog: BottomSheetDialog
+    lateinit var binding: ActivityMainBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        toolbar.title = ""
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.toolbar.title = ""
+        setSupportActionBar(binding.toolbar)
+        beginLottie()
 
-        init()
         setAdapter()
         setDialog()
 
@@ -55,7 +60,7 @@ class MainActivity : AppCompatActivity(), Contract.View {
             presenter.onCloseAction(isClosed, pos)
         }
 
-        add_button.setOnClickListener {
+        binding.addButton.setOnClickListener {
             customItem.id = 0
             customItem.title = ""
             customItem.deadline = ""
@@ -64,22 +69,22 @@ class MainActivity : AppCompatActivity(), Contract.View {
             presenter.openEditDialog(customItem)
         }
 
-        swipe_refresh.setOnRefreshListener {
+        binding.swipeRefresh.setOnRefreshListener {
             presenter.reloadAction()
-            swipe_refresh.isRefreshing = false
+            binding.swipeRefresh.isRefreshing = false
         }
 
         val swipeGestures = object : ItemGestures(this) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
 
 
-                val from_pos = viewHolder.adapterPosition
-                val to_pos = target.adapterPosition
-                d("TAG", "from_pos - $from_pos to_pos - $to_pos")
+                val fromPos = viewHolder.adapterPosition
+                val toPos = target.adapterPosition
+                d("TAG", "fromPos - $fromPos, toPos - $toPos")
 
-                Collections.swap(activityList, from_pos, to_pos)
-                adapter.notifyItemMoved(from_pos, to_pos)
-                presenter.moveAction(from_pos, to_pos)
+                Collections.swap(activityList, fromPos, toPos)
+                adapter.notifyItemMoved(fromPos, toPos)
+                presenter.moveAction(fromPos, toPos)
                 return false
             }
 
@@ -102,7 +107,7 @@ class MainActivity : AppCompatActivity(), Contract.View {
                         adapter.delete(tempPos!!)
                         (presenter as Presenter).deleteAction(adapter.currentList[tempPos!!])
 
-                        Snackbar.make(recyclerView, "Task deleated", Snackbar.LENGTH_LONG).setAction("Undo") {
+                        Snackbar.make(binding.recyclerView, "Task deleted", Snackbar.LENGTH_LONG).setAction("Undo") {
                             presenter.addAction(item)
 //                            adapter!!.notifyItemRemoved(tempPos!!)
                         }
@@ -115,7 +120,7 @@ class MainActivity : AppCompatActivity(), Contract.View {
             }
         }
         val touchHelper = ItemTouchHelper(swipeGestures)
-        touchHelper.attachToRecyclerView(recyclerView)
+        touchHelper.attachToRecyclerView(binding.recyclerView)
     }
 
 
@@ -124,30 +129,26 @@ class MainActivity : AppCompatActivity(), Contract.View {
         activityList.forEach {
             if (!it.isClosed) counter++
         }
-        active_task_size.text = counter.toString()
+        binding.activeTaskSize.text = counter.toString()
     }
 
     private fun setAdapter() {
         adapter = TaskAdapter()
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
     }
 
-    private fun init() {
-        /*  Edit text automatic ochilib qolayotgan edi  */
-        this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        /*******/
-        /*  EditTextlar animatsiya qilish uchun recyclerni orqasida qolishga majbur edi  */
-        /*super_layout.requestLayout()
-        dialog1.bringToFront()
-        dialog1.invalidate()
+    private fun beginLottie() {
+//        /*  Edit text automatic ochilib qolayotgan edi  */
+//        this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-//        dialog1.setTranslationZ(180f);
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            dialog1.setTranslationZ(Integer.MAX_VALUE.toFloat());
-        }
-//        super_layout.bringChildToFront(dialog1)*/
+        if (App.firstTimeLottie) {
+            binding.lottieView.animate().translationY(-1500F).setDuration(1000).setStartDelay(2500)
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                binding.lottieView.visibility = View.GONE
+            }, 3700)
+            App.firstTimeLottie = false
+        } else binding.lottieView.visibility = View.GONE
     }
 
     override fun editDialog(item: TaskEntity) {
@@ -279,7 +280,7 @@ class MainActivity : AppCompatActivity(), Contract.View {
         if (intent.resolveActivity(this.packageManager) != null) {
             startActivity(intent)
         } else {
-            showSnackbar(this.toolbar, getString(R.string.cannot_email))
+            showSnackbar(binding.toolbar, getString(R.string.cannot_email))
         }
     }
 

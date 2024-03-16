@@ -15,6 +15,7 @@ class App: Application() {
     }
 
     companion object{
+        var firstTimeLottie = true
         lateinit var instance: App
     }
 }

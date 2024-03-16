@@ -24,7 +24,7 @@
             android:paddingBottom="8dp">
 
             <CheckBox
-                android:id="@id/checkbox"
+                android:id="@+id/checkbox"
                 android:layout_width="35dp"
                 android:layout_height="30dp"
                 android:checked="false"

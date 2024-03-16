@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.task_layout.view.*
 import uz.gita.tasktodo.R
 import uz.gita.tasktodo.model.db.TaskEntity
 import java.util.ArrayList
@@ -73,9 +72,9 @@ class TaskAdapter: ListAdapter<TaskEntity,RecyclerView.ViewHolder>(Diff()) {
 
 
     inner class TaskViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        private val title: TextView = view.item_title
-        private val deadline: TextView = view.item_deadline
-        private val checkbox: CheckBox = view.checkbox
+        private val title: TextView = view.findViewById(R.id.item_title)
+        private val deadline: TextView = view.findViewById(R.id.item_deadline)
+        private val checkbox: CheckBox = view.findViewById(R.id.checkbox)
 
 
         fun bind(data: TaskEntity, position: Int){
