@@ -21,5 +21,18 @@
             </intent-filter>
         </activity>
     </application>
+    <queries>
+        <!-- Specific apps you interact with, eg: -->
+<!--        <package android:name="com.example.store" />-->
+<!--        <package android:name="com.example.service" />-->
+        <!--
+             Specific intents you query for,
+             eg: for a custom share UI
+        -->
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
 
 </manifest>
