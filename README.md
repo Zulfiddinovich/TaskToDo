@@ -1,5 +1,5 @@
 
-# Todo android app
+# "TaskTodo" android todo app
 This project is Todo app for android.
 
 <img src="https://img.shields.io/badge/license-MIT_license-blue"/>
