@@ -14,7 +14,7 @@ This project is Todo app for android.
 
 # Images
 
-<img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/Main_photo_PlayMarket.jpg"3px" />
+<img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/Main_photo_PlayMarket.jpg" />
 
 <img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/1_.jpg" width="250"/>  <img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/2_.jpg" width="250"/>  <img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/3_.jpg" width="250"/>
 <img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/4_.jpg" width="250"/>  <img alt="" src="https://gitlab.com/Zulfiddinovich/tasktodo/-/raw/master/files/images/5_.jpg" width="250"/>
